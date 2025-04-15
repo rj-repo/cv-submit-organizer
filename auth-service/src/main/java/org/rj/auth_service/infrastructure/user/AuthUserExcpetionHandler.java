@@ -1,0 +1,46 @@
+package org.rj.auth_service.infrastructure.user;
+
+
+import lombok.extern.slf4j.Slf4j;
+import org.rj.auth_service.domain.user.model.AuthUserDomainException;
+import org.rj.cvsubmitorganizer.common.ApiResponseException;
+import org.rj.cvsubmitorganizer.common.ResponseException;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.security.authentication.BadCredentialsException;
+import org.springframework.security.core.AuthenticationException;
+import org.springframework.web.bind.annotation.ExceptionHandler;
+import org.springframework.web.bind.annotation.RestControllerAdvice;
+
+@RestControllerAdvice
+@Slf4j
+public class AuthUserExcpetionHandler {
+
+    @ExceptionHandler({AuthUserDomainException.class})
+    public ResponseEntity<ApiResponseException> handleResponseException(RuntimeException ex) {
+        HttpStatus badRequest = HttpStatus.BAD_REQUEST;
+        ApiResponseException responseException = ApiResponseException.builder()
+                .message(ex.getMessage())
+                .statusCode(badRequest.value())
+                .build();
+        return ResponseEntity.status(badRequest).body(responseException);
+    }
+
+    @ExceptionHandler({ResponseException.class})
+    public ResponseEntity<ApiResponseException> handleResponseException(ResponseException ex) {
+        ApiResponseException responseException = ApiResponseException.builder()
+                .message(ex.getMessage())
+                .statusCode(ex.getHttpStatus().value())
+                .build();
+        return ResponseEntity.status(ex.getHttpStatus()).body(responseException);
+    }
+
+    @ExceptionHandler({BadCredentialsException.class})
+    public ResponseEntity<ApiResponseException> handleResponseException(AuthenticationException ex) {
+        ApiResponseException responseException = ApiResponseException.builder()
+                .message(ex.getMessage())
+                .statusCode(HttpStatus.UNAUTHORIZED.value())
+                .build();
+        return ResponseEntity.status(HttpStatus.UNAUTHORIZED.value()).body(responseException);
+    }
+}
