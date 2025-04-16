@@ -6,7 +6,7 @@ import com.auth0.jwt.algorithms.Algorithm;
 import com.auth0.jwt.exceptions.JWTVerificationException;
 import lombok.RequiredArgsConstructor;
 import org.rj.auth_service.application.user.exception.InvalidJwtTokenException;
-import org.rj.auth_service.domain.token.Token;
+import org.rj.auth_service.domain.user.model.Token;
 import org.rj.auth_service.domain.verification.ports.out.AuthTokenProviderPort;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
@@ -48,7 +48,7 @@ public class JwtTokenProviderAdapter implements AuthTokenProviderPort {
                 .withExpiresAt(new Date(System.currentTimeMillis() + jwtExpiration))
                 .sign(Algorithm.HMAC256(secretKey));
 
-        return new Token(token, username);
+        return new Token(token);
     }
 }
 

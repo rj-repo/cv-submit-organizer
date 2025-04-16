@@ -2,7 +2,7 @@ package org.rj.auth_service.application.user.usecase;
 
 import lombok.RequiredArgsConstructor;
 import org.rj.auth_service.application.user.exception.AuthUserNotFoundException;
-import org.rj.auth_service.domain.token.Token;
+import org.rj.auth_service.domain.user.model.Token;
 import org.rj.auth_service.domain.user.dto.LoginResponse;
 import org.rj.auth_service.domain.user.dto.LoginUserRequest;
 import org.rj.auth_service.domain.user.model.AuthUser;
@@ -27,7 +27,7 @@ public class LoginUserService implements LoginUserUseCase {
         authManagerPort.authenticate(loginUserRequest);
         Token token = tokenService.createToken(authUser.getEmail());
 
-        return new LoginResponse(token.token(), token.username());
+        return new LoginResponse(token.token());
     }
 
 }

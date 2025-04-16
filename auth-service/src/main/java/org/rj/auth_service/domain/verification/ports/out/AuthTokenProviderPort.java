@@ -1,6 +1,6 @@
 package org.rj.auth_service.domain.verification.ports.out;
 
-import org.rj.auth_service.domain.token.Token;
+import org.rj.auth_service.domain.user.model.Token;
 
 public interface AuthTokenProviderPort {
 

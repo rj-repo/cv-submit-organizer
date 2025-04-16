@@ -6,7 +6,7 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.rj.auth_service.application.user.exception.AuthUserNotFoundException;
-import org.rj.auth_service.domain.token.Token;
+import org.rj.auth_service.domain.user.model.Token;
 import org.rj.auth_service.domain.user.dto.LoginResponse;
 import org.rj.auth_service.domain.user.dto.LoginUserRequest;
 import org.rj.auth_service.domain.user.model.AuthUser;
@@ -47,7 +47,7 @@ public class LoginUserServiceTest {
         AuthUser authUser = AuthUser.builder()
                 .email(email)
                 .enabled(true).build();
-        Token token = new Token(tokenValue, username);
+        Token token = new Token(tokenValue);
 
         when(userRepository.findByEmail(anyString())).thenReturn(Optional.of(authUser));
         when(tokenService.createToken(anyString())).thenReturn(token);
@@ -57,7 +57,7 @@ public class LoginUserServiceTest {
 
         // then
         assertEquals(tokenValue, response.token());
-        assertEquals(username, response.username());
+        assertEquals(username, response);
 
         verify(authManagerPort).authenticate(request);
         verify(tokenService).createToken(email);
