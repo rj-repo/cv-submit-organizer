@@ -10,7 +10,7 @@ Also, it has the goal to make possibility to have an organizer/manager for own C
 ## Current progress
 Current progress is limited only to simple basics such as authentication service, API Gateway and configured service registry.
 
-##Technology stack
+## Technology stack
 - backend
     - development
         - Java 21
@@ -27,13 +27,13 @@ Current progress is limited only to simple basics such as authentication service
         - JUnit 5 (unit tests)
         - TestContainers (integration tests)
 - deployment
-    - docker
-    - Kubernetes
+    - Docker
 
 Future possible technologies:
 - frontend
     - Angular (latest)
 - deployment
+    - Kubernetes
     - CI/CD as GitHub Actions
     - Swagger (to auto-documentation)
 ## Architecture
