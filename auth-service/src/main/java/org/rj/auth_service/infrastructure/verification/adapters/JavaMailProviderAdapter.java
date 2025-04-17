@@ -2,6 +2,7 @@ package org.rj.auth_service.infrastructure.verification.adapters;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.rj.auth_service.application.verification.exception.VerificationTokenSendingException;
 import org.rj.auth_service.domain.verification.ports.out.EmailSenderProviderPort;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.mail.MailException;
@@ -40,7 +41,7 @@ public class JavaMailProviderAdapter implements EmailSenderProviderPort {
             mailSender.send(message);
         } catch (MailException e){
             log.error("Error sending mail", e);
-            throw new MailSendException("Token cannot be sent - internal error occured");
+            throw new VerificationTokenSendingException("Token cannot be sent - internal error occured");
         }
     }
 }

@@ -1,4 +1,4 @@
-package org.rj.auth_service.infrastructure.common.rest;
+package org.rj.auth_service.application.rest;
 
 
 import jakarta.validation.Valid;
