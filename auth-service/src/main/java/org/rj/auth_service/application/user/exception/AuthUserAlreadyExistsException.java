@@ -2,7 +2,6 @@ package org.rj.auth_service.application.user.exception;
 
 import org.rj.cvsubmitorganizer.common.ResponseException;
 import org.springframework.http.HttpStatus;
-import org.springframework.web.bind.annotation.ResponseStatus;
 
 
 public class AuthUserAlreadyExistsException extends ResponseException {
@@ -23,7 +22,5 @@ public class AuthUserAlreadyExistsException extends ResponseException {
         return message;
     }
 
-    public String getClassName() {
-        return getClass().getName();
-    }
+   
 }

@@ -7,6 +7,7 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.rj.auth_service.application.user.exception.AuthUserAlreadyVerifiedException;
 import org.rj.auth_service.application.user.exception.AuthUserNotFoundException;
+import org.rj.auth_service.application.verification.exception.VerificationTokenNotFoundException;
 import org.rj.auth_service.domain.user.model.AuthUser;
 import org.rj.auth_service.domain.user.model.AuthUserId;
 import org.rj.auth_service.domain.user.ports.out.UserAuthRepoPort;
@@ -102,5 +103,25 @@ public class EnableUserServiceTest {
         assertThrows(AuthUserAlreadyVerifiedException.class, () -> enableUserService.enableUser(token));
 
         verify(userRepository, never()).save(any());
+    }
+
+    @Test
+    public void throwExceptionIfTokenNotFound() {
+        // given
+        String token = "token-not-found";
+        AuthUserId userId = new AuthUserId(1L);
+        AuthUser authUser = AuthUser.builder()
+                .id(userId)
+                .enabled(true)
+                .build();
+
+        when(verificationTokenRepoPort.findByVerificationToken(any())).thenReturn(Optional.empty());
+
+        // when-then
+        assertThrows(VerificationTokenNotFoundException.class, () -> enableUserService.enableUser(token));
+
+
+        verify(userRepository, never()).save(any());
+        verify(userRepository, never()).findById(any());
     }
 }

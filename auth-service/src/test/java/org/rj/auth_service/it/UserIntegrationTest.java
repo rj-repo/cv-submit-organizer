@@ -16,6 +16,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.web.client.TestRestTemplate;
 import org.springframework.boot.test.web.server.LocalServerPort;
+import org.springframework.http.HttpEntity;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.test.context.DynamicPropertyRegistry;
@@ -216,6 +218,46 @@ public class UserIntegrationTest extends TestContainersInitConfiguration {
         assertThat(voidResponseEntity.getStatusCode()).isEqualTo(HttpStatus.OK);
         assertFalse(voidResponseEntity.hasBody());
 
+    }
+
+    @Test
+    void validateToken_validToken() {
+        RegisterUserRequest registerUserRequest = new RegisterUserRequest(
+                "username@gmail.com",
+                "passworD123@"
+        );
+
+        restTemplate.postForEntity(
+                "http://localhost:" + port + "/api/v1/auth/signup",
+                registerUserRequest,
+                Void.class);
+
+        String tokenVer = getVerificationToken(registerUserRequest.email());
+
+        restTemplate.postForEntity(
+                "http://localhost:" + port + "/api/v1/auth/verification?token=" + tokenVer,
+                getVerificationToken(registerUserRequest.email()),
+                Void.class);
+
+        LoginUserRequest loginUserRequest = new LoginUserRequest(
+                "username@gmail.com",
+                "passworD123@"
+        );
+
+        ResponseEntity<LoginResponse> loginResponse = restTemplate.postForEntity(
+                "http://localhost:" + port + "/api/v1/auth/login",
+                loginUserRequest,
+                LoginResponse.class);
+        HttpHeaders headers = new HttpHeaders();
+        headers.add("Authorization", "Bearer "+loginResponse.getBody().token());
+        HttpEntity<String> requestEntity = new HttpEntity<>(null, headers);
+
+        ResponseEntity<Void> validatingTokenResponse = restTemplate.postForEntity(
+                "http://localhost:" + port + "/api/v1/auth/validation",
+                requestEntity,
+                Void.class);
+
+        assertThat(validatingTokenResponse.getStatusCode()).isEqualTo(HttpStatus.OK);
     }
 
 

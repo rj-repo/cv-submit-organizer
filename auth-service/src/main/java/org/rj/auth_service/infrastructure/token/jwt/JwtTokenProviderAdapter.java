@@ -11,6 +11,8 @@ import org.rj.auth_service.domain.verification.ports.out.AuthTokenProviderPort;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
+import java.time.Instant;
+import java.time.LocalDateTime;
 import java.util.Date;
 
 @Service
@@ -44,8 +46,8 @@ public class JwtTokenProviderAdapter implements AuthTokenProviderPort {
         String token = JWT.create()
                 .withSubject(username)
                 .withIssuer(jwtIssuer)
-                .withIssuedAt(new Date(System.currentTimeMillis()))
-                .withExpiresAt(new Date(System.currentTimeMillis() + jwtExpiration))
+                .withIssuedAt(new Date(Instant.now().toEpochMilli()))
+                .withExpiresAt(new Date(Instant.now().plusSeconds(jwtExpiration).toEpochMilli()))
                 .sign(Algorithm.HMAC256(secretKey));
 
         return new Token(token);

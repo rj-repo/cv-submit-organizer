@@ -21,7 +21,5 @@ public class AuthUserNotFoundException extends ResponseException {
         return message;
     }
 
-    public String getClassName() {
-        return getClass().getName();
-    }
+   
 }

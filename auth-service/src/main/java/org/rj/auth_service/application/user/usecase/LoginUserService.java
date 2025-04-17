@@ -2,10 +2,10 @@ package org.rj.auth_service.application.user.usecase;
 
 import lombok.RequiredArgsConstructor;
 import org.rj.auth_service.application.user.exception.AuthUserNotFoundException;
-import org.rj.auth_service.domain.user.model.Token;
 import org.rj.auth_service.domain.user.dto.LoginResponse;
 import org.rj.auth_service.domain.user.dto.LoginUserRequest;
 import org.rj.auth_service.domain.user.model.AuthUser;
+import org.rj.auth_service.domain.user.model.Token;
 import org.rj.auth_service.domain.user.ports.in.AuthManagerPort;
 import org.rj.auth_service.domain.user.ports.in.LoginUserUseCase;
 import org.rj.auth_service.domain.user.ports.out.UserAuthRepoPort;

@@ -17,8 +17,8 @@ public class VerificationToken {
     private AuthUserId userId;
     private LocalDateTime expirationDate;
 
-    public void setExpirationDate(){
-        this.expirationDate = LocalDateTime.now().plusMinutes(10);
+    public void setExpirationDate(int minutes){
+        this.expirationDate = LocalDateTime.now().plusMinutes(minutes);
     }
 
 
@@ -30,6 +30,11 @@ public class VerificationToken {
         if (LocalDateTime.now().isAfter(expirationDate)) {
             throw new VerificationTokenDomainException("Token expired");
         }
+    }
+
+    public void generateNewToken(VerificationToken oldToken) {
+        oldToken.generateToken();
+        oldToken.setExpirationDate(10);
     }
 
 

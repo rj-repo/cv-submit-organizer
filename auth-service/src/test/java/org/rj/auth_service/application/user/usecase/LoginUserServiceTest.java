@@ -6,10 +6,10 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.rj.auth_service.application.user.exception.AuthUserNotFoundException;
-import org.rj.auth_service.domain.user.model.Token;
 import org.rj.auth_service.domain.user.dto.LoginResponse;
 import org.rj.auth_service.domain.user.dto.LoginUserRequest;
 import org.rj.auth_service.domain.user.model.AuthUser;
+import org.rj.auth_service.domain.user.model.Token;
 import org.rj.auth_service.domain.user.ports.in.AuthManagerPort;
 import org.rj.auth_service.domain.user.ports.out.UserAuthRepoPort;
 import org.rj.auth_service.domain.verification.ports.out.AuthTokenProviderPort;
@@ -40,7 +40,6 @@ public class LoginUserServiceTest {
         // given
         String email = "test@example.com";
         String tokenValue = "mocked-jwt-token";
-        String username = "testuser";
 
         LoginUserRequest request = new LoginUserRequest(email, "password123");
 
@@ -57,7 +56,6 @@ public class LoginUserServiceTest {
 
         // then
         assertEquals(tokenValue, response.token());
-        assertEquals(username, response);
 
         verify(authManagerPort).authenticate(request);
         verify(tokenService).createToken(email);

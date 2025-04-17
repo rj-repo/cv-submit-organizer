@@ -20,8 +20,4 @@ public class AuthUserAlreadyVerifiedException extends ResponseException {
     public String getMessage() {
         return message;
     }
-
-    public String getClassName() {
-        return getClass().getName();
-    }
 }

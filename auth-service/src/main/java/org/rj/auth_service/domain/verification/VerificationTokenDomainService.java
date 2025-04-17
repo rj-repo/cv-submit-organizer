@@ -9,13 +9,13 @@ public class VerificationTokenDomainService {
         VerificationToken verificationToken = VerificationToken.builder()
                 .userId(userId)
                 .build();
-        verificationToken.setExpirationDate();
+        verificationToken.setExpirationDate(10);
         verificationToken.generateToken();
         return verificationToken;
     }
 
     public void generateNewToken(VerificationToken oldToken) {
         oldToken.generateToken();
-        oldToken.setExpirationDate();
+        oldToken.setExpirationDate(10);
     }
 }

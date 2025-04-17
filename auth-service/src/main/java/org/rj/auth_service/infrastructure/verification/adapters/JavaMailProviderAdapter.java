@@ -6,7 +6,6 @@ import org.rj.auth_service.application.verification.exception.VerificationTokenS
 import org.rj.auth_service.domain.verification.ports.out.EmailSenderProviderPort;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.mail.MailException;
-import org.springframework.mail.MailSendException;
 import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.stereotype.Service;

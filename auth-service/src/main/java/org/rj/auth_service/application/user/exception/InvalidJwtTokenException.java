@@ -21,7 +21,5 @@ public class InvalidJwtTokenException extends ResponseException {
         return message;
     }
 
-    public String getClassName() {
-        return getClass().getName();
-    }
+   
 }
