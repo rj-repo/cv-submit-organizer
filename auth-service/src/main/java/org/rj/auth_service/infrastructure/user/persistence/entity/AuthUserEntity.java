@@ -11,7 +11,7 @@ import org.rj.auth_service.domain.user.model.AuthUserId;
 @Setter
 @Entity
 @EqualsAndHashCode
-@Table(name = "users")
+@Table(name = "users", schema = "users")
 @NoArgsConstructor
 public class AuthUserEntity {
 

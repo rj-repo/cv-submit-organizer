@@ -15,7 +15,7 @@ import java.time.LocalDateTime;
 @Setter
 @Entity
 @EqualsAndHashCode
-@Table(name = "verification_token")
+@Table(name = "verification_token",schema = "users")
 @NoArgsConstructor
 public class VerificationTokenEntity {
 
