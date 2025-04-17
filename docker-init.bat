@@ -1,3 +1,4 @@
-mvn clean install -DskipTests
-docker compose build
-docker compose up
+@echo off
+call mvn clean install -DskipTests
+call docker compose build
+call docker compose up
