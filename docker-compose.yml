@@ -1,5 +1,10 @@
 version: "3.8"
 
+networks:
+  public:
+  internal:
+
+
 services:
   
   eureka:
@@ -8,27 +13,31 @@ services:
     container_name: eureka
     ports:
       - "8999:8999"
+    networks:
+      - internal
 
   db:
     image: postgres:14.4
     restart: always
-    hostname: postgres
+    container_name: organizer-db
     environment:
       POSTGRES_PASSWORD: root
       POSTGRES_USER: postgres
       POSTGRES_DB: organizer
     ports:
       - "5432:5432"
+    networks:
+      - internal
   
   auth:
     build: ./auth-service/
     image: auth-service:0.1
     container_name: auth
-    ports:
-      - "8998:8998"
     depends_on:
       - eureka
       - db
+    networks:
+      - internal
 
 
   
@@ -41,4 +50,7 @@ services:
       - "8080:8080"
     depends_on:
       - auth
+    networks:
+      - public
+      - internal
   
