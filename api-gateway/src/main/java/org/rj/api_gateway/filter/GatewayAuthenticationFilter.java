@@ -37,7 +37,7 @@ public class GatewayAuthenticationFilter implements GatewayFilter {
             HttpHeaders headers = request.getHeaders();
             HttpEntity<Void> entity = new HttpEntity<>(headers);
             try {
-               restTemplate.exchange("http://auth-service/api/v1/auth/validation", HttpMethod.POST, entity, String.class);
+               restTemplate.exchange("http://auth-service/api/v1/auth/validation", HttpMethod.POST, entity, Void.class);
             } catch (WebClientResponseException e) {
                 if (e.getStatusCode().equals(HttpStatus.UNAUTHORIZED)) {
                     return onError(exchange, HttpStatus.valueOf(e.getStatusCode().value()));
