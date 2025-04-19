@@ -10,6 +10,7 @@ import org.rj.auth_service.domain.user.dto.LoginResponse;
 import org.rj.auth_service.domain.user.dto.LoginUserRequest;
 import org.rj.auth_service.domain.user.dto.RegisterUserRequest;
 import org.rj.auth_service.domain.user.model.AuthUser;
+import org.rj.auth_service.domain.user.model.UserDetails;
 import org.rj.auth_service.domain.verification.model.VerificationToken;
 import org.rj.auth_service.infrastructure.user.persistence.JpaAuthUser;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -20,6 +21,7 @@ import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.test.context.DynamicPropertyRegistry;
 import org.springframework.test.context.DynamicPropertySource;
 import org.testcontainers.junit.jupiter.Testcontainers;
@@ -42,6 +44,9 @@ public class UserIntegrationTest extends TestContainersInitConfiguration {
     private JpaAuthUser jpaAuthUser;
 
     @Autowired
+    private JdbcTemplate jdbcTemplate;
+
+    @Autowired
     private JpaVerificationTokenStub jpaVerificationTokenStub;
 
 
@@ -54,6 +59,8 @@ public class UserIntegrationTest extends TestContainersInitConfiguration {
     @BeforeEach
     public void clearDatabase() {
         jpaAuthUser.deleteAll();
+        jpaVerificationTokenStub.deleteAll();
+        jdbcTemplate.execute("ALTER SEQUENCE users.users_id_seq RESTART WITH 1");
     }
 
 
@@ -66,14 +73,14 @@ public class UserIntegrationTest extends TestContainersInitConfiguration {
         );
 
         ResponseEntity<Void> getResponse = restTemplate.postForEntity(
-                "http://localhost:" + port + "/api/v1/auth/signup",
+                "http://localhost:" + port + "/api/v1/auth/registration",
                 registerUserRequest,
                 Void.class);
         assertThat(getResponse.getStatusCode()).isEqualTo(HttpStatus.OK);
         assertFalse(getResponse.hasBody());
 
         ResponseEntity<Void> getResponse1 = restTemplate.postForEntity(
-                "http://localhost:" + port + "/api/v1/auth/signup",
+                "http://localhost:" + port + "/api/v1/auth/registration",
                 registerUserRequest,
                 Void.class);
         assertThat(getResponse1.getStatusCode()).isEqualTo(HttpStatus.FORBIDDEN);
@@ -90,7 +97,7 @@ public class UserIntegrationTest extends TestContainersInitConfiguration {
         );
 
         ResponseEntity<Void> getResponse = restTemplate.postForEntity(
-                "http://localhost:" + port + "/api/v1/auth/signup",
+                "http://localhost:" + port + "/api/v1/auth/registration",
                 registerUserRequest,
                 Void.class);
         assertThat(getResponse.getStatusCode()).isEqualTo(HttpStatus.OK);
@@ -107,7 +114,7 @@ public class UserIntegrationTest extends TestContainersInitConfiguration {
         );
 
         restTemplate.postForEntity(
-                "http://localhost:" + port + "/api/v1/auth/signup",
+                "http://localhost:" + port + "/api/v1/auth/registration",
                 registerUserRequest,
                 Void.class);
 
@@ -132,7 +139,7 @@ public class UserIntegrationTest extends TestContainersInitConfiguration {
         assertTrue(loginResponse.hasBody());
         assertNotNull(loginResponse.getBody().token());
         String token = loginResponse.getBody().token();
-        assertThat(decodeToken(token).getSubject()).isEqualTo("username@gmail.com");
+        assertThat(decodeToken(token).getSubject()).isEqualTo("1");
 
     }
 
@@ -144,7 +151,7 @@ public class UserIntegrationTest extends TestContainersInitConfiguration {
         );
 
         restTemplate.postForEntity(
-                "http://localhost:" + port + "/api/v1/auth/signup",
+                "http://localhost:" + port + "/api/v1/auth/registration",
                 registerUserRequest,
                 Void.class);
 
@@ -170,7 +177,7 @@ public class UserIntegrationTest extends TestContainersInitConfiguration {
         );
 
         restTemplate.postForEntity(
-                "http://localhost:" + port + "/api/v1/auth/signup",
+                "http://localhost:" + port + "/api/v1/auth/registration",
                 registerUserRequest,
                 Void.class);
 
@@ -192,7 +199,7 @@ public class UserIntegrationTest extends TestContainersInitConfiguration {
         assertTrue(loginResponse.hasBody());
         assertNotNull(loginResponse.getBody().token());
         String token = loginResponse.getBody().token();
-        assertThat(decodeToken(token).getSubject()).isEqualTo("username@com.pl");
+        assertThat(decodeToken(token).getSubject()).isEqualTo("1");
 
     }
 
@@ -205,7 +212,7 @@ public class UserIntegrationTest extends TestContainersInitConfiguration {
         );
 
         restTemplate.postForEntity(
-                "http://localhost:" + port + "/api/v1/auth/signup",
+                "http://localhost:" + port + "/api/v1/auth/registration",
                 registerUserRequest,
                 Void.class);
 
@@ -228,9 +235,10 @@ public class UserIntegrationTest extends TestContainersInitConfiguration {
         );
 
         restTemplate.postForEntity(
-                "http://localhost:" + port + "/api/v1/auth/signup",
+                "http://localhost:" + port + "/api/v1/auth/registration",
                 registerUserRequest,
                 Void.class);
+
 
         String tokenVer = getVerificationToken(registerUserRequest.email());
 
@@ -249,15 +257,18 @@ public class UserIntegrationTest extends TestContainersInitConfiguration {
                 loginUserRequest,
                 LoginResponse.class);
         HttpHeaders headers = new HttpHeaders();
-        headers.add("Authorization", "Bearer "+loginResponse.getBody().token());
+        headers.add("Authorization", "Bearer " + loginResponse.getBody().token());
         HttpEntity<String> requestEntity = new HttpEntity<>(null, headers);
 
-        ResponseEntity<Void> validatingTokenResponse = restTemplate.postForEntity(
+        ResponseEntity<UserDetails> validatingTokenResponse = restTemplate.postForEntity(
                 "http://localhost:" + port + "/api/v1/auth/validation",
                 requestEntity,
-                Void.class);
+                UserDetails.class);
 
         assertThat(validatingTokenResponse.getStatusCode()).isEqualTo(HttpStatus.OK);
+        assertNull(validatingTokenResponse.getBody());
+        assertThat(validatingTokenResponse.getHeaders().getFirst("X-User-Id")).isEqualTo("1");
+        assertThat(validatingTokenResponse.getHeaders().getFirst("X-Email")).isEqualTo(registerUserRequest.email());
     }
 
 

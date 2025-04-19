@@ -9,6 +9,7 @@ import org.rj.auth_service.application.user.exception.AuthUserNotFoundException;
 import org.rj.auth_service.domain.user.dto.LoginResponse;
 import org.rj.auth_service.domain.user.dto.LoginUserRequest;
 import org.rj.auth_service.domain.user.model.AuthUser;
+import org.rj.auth_service.domain.user.model.AuthUserId;
 import org.rj.auth_service.domain.user.model.Token;
 import org.rj.auth_service.domain.user.ports.in.AuthManagerPort;
 import org.rj.auth_service.domain.user.ports.out.UserAuthRepoPort;
@@ -43,13 +44,15 @@ public class LoginUserServiceTest {
 
         LoginUserRequest request = new LoginUserRequest(email, "password123");
 
+        AuthUserId id = new AuthUserId(1L);
         AuthUser authUser = AuthUser.builder()
+                .id(id)
                 .email(email)
                 .enabled(true).build();
         Token token = new Token(tokenValue);
 
         when(userRepository.findByEmail(anyString())).thenReturn(Optional.of(authUser));
-        when(tokenService.createToken(anyString())).thenReturn(token);
+        when(tokenService.createToken(any(AuthUserId.class),anyString())).thenReturn(token);
 
         // when
         LoginResponse response = loginService.login(request);
@@ -58,7 +61,7 @@ public class LoginUserServiceTest {
         assertEquals(tokenValue, response.token());
 
         verify(authManagerPort).authenticate(request);
-        verify(tokenService).createToken(email);
+        verify(tokenService).createToken(any(AuthUserId.class),anyString());
     }
 
     @Test
@@ -73,6 +76,6 @@ public class LoginUserServiceTest {
         assertThrows(AuthUserNotFoundException.class, () -> loginService.login(request));
 
         verify(authManagerPort, never()).authenticate(any());
-        verify(tokenService, never()).createToken(any());
+        verify(tokenService, never()).createToken(any(AuthUserId.class),anyString());
     }
 }

@@ -15,8 +15,4 @@ public abstract class ResponseException extends RuntimeException {
         return HttpStatus.INTERNAL_SERVER_ERROR;
     }
 
-    public String getClassName() {
-        return getClass().getSimpleName();
-    }
-
 }

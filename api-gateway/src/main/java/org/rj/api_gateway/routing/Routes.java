@@ -16,10 +16,16 @@ public class Routes {
 
     @Bean
     public RouteLocator routeLocator(RouteLocatorBuilder routeLocatorBuilder) {
-        return routeLocatorBuilder.routes().route("auth-service",
+        return routeLocatorBuilder.routes()
+                .route("auth-service",
                         route -> route.path("/api/v1/auth/**")
                                 .filters(f -> f.filter(filter))
                                 .uri("lb://auth-service"))
+                .route("user-service",
+                        route -> route.path("/api/v1/profile/**")
+                                .filters(f -> f.filter(filter))
+                                .uri("lb://user-service"))
+
                 .build();
     }
 }
