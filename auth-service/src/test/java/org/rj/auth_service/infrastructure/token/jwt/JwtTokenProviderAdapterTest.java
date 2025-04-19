@@ -8,6 +8,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.rj.auth_service.application.user.exception.InvalidJwtTokenException;
+import org.rj.auth_service.domain.user.model.AuthUserId;
 import org.rj.auth_service.domain.user.model.Token;
 import org.springframework.test.util.ReflectionTestUtils;
 
@@ -30,25 +31,27 @@ public class JwtTokenProviderAdapterTest {
     @Test
     void createTokenAndReturnValidUsername() {
         //given
-        String username = "mockuser";
-
+        AuthUserId authUserId = new AuthUserId(1L);
+        String email  = "username@gmail.com";
         //when
-        Token token = jwtService.createToken(username);
+        Token token = jwtService.createToken(authUserId,email);
 
         //then
         assertNotNull(token);
-        assertEquals(username,decodeToken(token.token()).getSubject());
+        assertEquals(String.valueOf(authUserId.id()),decodeToken(token.token()).getSubject());
         assertNotNull(token.token());
     }
 
     @Test
     void validateTokenSuccessfully() {
         //given
-        String username = "validuser";
-        String bearerToken = jwtService.createToken(username).token();
+        AuthUserId authUserId = new AuthUserId(1L);
+        String email  = "username@gmail.com";
+        //when
+        Token token = jwtService.createToken(authUserId,email);
 
         //then-throw
-        assertDoesNotThrow(() -> jwtService.validate(bearerToken));
+        assertDoesNotThrow(() -> jwtService.validate(token.token()));
     }
 
     @Test
@@ -68,8 +71,11 @@ public class JwtTokenProviderAdapterTest {
     @Test
     void throwsExceptionDueToInvalidSecret() {
         //given
-        String username = "username";
-        Token generatedToken = jwtService.createToken(username);
+        //given
+        AuthUserId authUserId = new AuthUserId(1L);
+        String email  = "username@gmail.com";
+        //when
+        Token token = jwtService.createToken(authUserId,email);
 
         ReflectionTestUtils.setField(jwtService, "secretKey", "newsecretKey");
 
@@ -77,7 +83,7 @@ public class JwtTokenProviderAdapterTest {
         //then-throw
         InvalidJwtTokenException exception = assertThrows(
                 InvalidJwtTokenException.class,
-                () -> jwtService.validate(generatedToken.token())
+                () -> jwtService.validate(token.token())
         );
 
         assertEquals("Invalid token", exception.getMessage());

@@ -1,6 +1,7 @@
 package org.rj.auth_service.application.user.usecase;
 
 import lombok.RequiredArgsConstructor;
+import org.rj.auth_service.domain.user.model.UserDetails;
 import org.rj.auth_service.domain.user.ports.in.ValidateUserTokenUseCase;
 import org.rj.auth_service.domain.verification.ports.out.AuthTokenProviderPort;
 import org.rj.cvsubmitorganizer.common.UseCaseService;
@@ -10,11 +11,12 @@ import org.rj.cvsubmitorganizer.common.UseCaseService;
 public class ValidateUserTokenService implements ValidateUserTokenUseCase {
 
     private final AuthTokenProviderPort authTokenProviderPort;
+
     @Override
-    public void validate(String token) {
-        if(token.contains("Bearer ")) {
+    public UserDetails validate(String token) {
+        if (token.contains("Bearer ")) {
             token = token.substring(7);
         }
-         authTokenProviderPort.validate(token);
+        return authTokenProviderPort.validate(token);
     }
 }

@@ -17,7 +17,7 @@ import org.rj.cvsubmitorganizer.common.UseCaseService;
 public class LoginUserService implements LoginUserUseCase {
     private final AuthManagerPort authManagerPort;
     private final AuthTokenProviderPort tokenService;
-    private final UserAuthRepoPort userRepository;;
+    private final UserAuthRepoPort userRepository;
 
     @Override
     public LoginResponse login(LoginUserRequest loginUserRequest) {
@@ -25,7 +25,7 @@ public class LoginUserService implements LoginUserUseCase {
                 .orElseThrow(() -> new AuthUserNotFoundException("User " + loginUserRequest.email() + " not found"));
         authUser.checkIfUserEnabled();
         authManagerPort.authenticate(loginUserRequest);
-        Token token = tokenService.createToken(authUser.getEmail());
+        Token token = tokenService.createToken(authUser.getId(),authUser.getEmail());
 
         return new LoginResponse(token.token());
     }

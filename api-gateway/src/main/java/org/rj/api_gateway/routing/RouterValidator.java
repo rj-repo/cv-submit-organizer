@@ -14,7 +14,8 @@ public class RouterValidator {
             "api/v1/auth/signup",
             "api/v1/auth/login",
             "api/v1/auth/verification",
-            "api/v1/auth/validation"
+            "api/v1/auth/validation",
+            "api/v1/profile/registration"
     );
 
     public Predicate<ServerHttpRequest> isSecured =

@@ -6,12 +6,15 @@ import lombok.RequiredArgsConstructor;
 import org.rj.auth_service.domain.user.dto.LoginResponse;
 import org.rj.auth_service.domain.user.dto.LoginUserRequest;
 import org.rj.auth_service.domain.user.dto.RegisterUserRequest;
+import org.rj.auth_service.domain.user.dto.UserModifyRequest;
+import org.rj.auth_service.domain.user.model.UserDetails;
 import org.rj.auth_service.domain.user.ports.in.EnableUserUseCase;
 import org.rj.auth_service.domain.user.ports.in.LoginUserUseCase;
 import org.rj.auth_service.domain.user.ports.in.RegisterUserUseCase;
 import org.rj.auth_service.domain.user.ports.in.ValidateUserTokenUseCase;
 import org.rj.auth_service.domain.verification.dto.VerificationTokenRequest;
 import org.rj.auth_service.domain.verification.ports.out.ResendVerificationTokenUseCase;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -27,7 +30,7 @@ public class UserAuthResource {
     private final ValidateUserTokenUseCase validateUserTokenUseCase;
 
 
-    @PostMapping("/signup")
+    @PostMapping("/registration")
     public ResponseEntity<Void> register(@RequestBody @Valid RegisterUserRequest registerUserDto) {
         registerUserUseCase.signup(registerUserDto);
         return ResponseEntity.ok().build();
@@ -53,9 +56,18 @@ public class UserAuthResource {
 
 
     @PostMapping("/validation")
-    public ResponseEntity<Void> loginAndRetrieveToken(@RequestHeader("Authorization") String token) {
-        validateUserTokenUseCase.validate(token);
-        return ResponseEntity.ok().build();
+    public ResponseEntity<Void> validation(@RequestHeader("Authorization") String token) {
+        UserDetails validate = validateUserTokenUseCase.validate(token);
+        HttpHeaders headers = new HttpHeaders();
+        headers.add("X-Email", validate.email());
+        headers.add("X-User-Id", validate.userId());
+
+        return ResponseEntity.ok().headers(headers).build();
+    }
+
+    @PutMapping("/user/{id}")
+    public ResponseEntity<Void> modify(@RequestBody @Valid UserModifyRequest userModifyRequest) {
+        return null;
     }
 
 
